@@ -5,7 +5,6 @@ $(document).ready(function () {
       amenitiesSelect.push($(this).parent().attr('data-name'));
     } else {
       const index = amenitiesSelect.indexOf(($(this).parent().attr('data-name')));
-      console.log(index);
       if (index > -1) {
         amenitiesSelect.splice(index, 1);
       }
