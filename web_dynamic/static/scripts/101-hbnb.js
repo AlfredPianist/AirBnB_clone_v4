@@ -15,6 +15,7 @@ $(document).ready(function () {
   ];
   const daySuffix = ['st', 'nd', 'rd'];
   const url = 'http://0.0.0.0:5001/api/v1/';
+
   $.get(url + 'status/', (data, status) => {
     if (status === 'success' && data.status === 'OK') {
       $('#api_status').addClass('available');
@@ -75,7 +76,10 @@ $(document).ready(function () {
               </div>\
               <div class="description">${place.description}</div>\
               <div class="reviews">\
-                <h2>Reviews <span class="show-reviews">Show</span></h2>\
+                <div class="reviews-title">\
+                  <h2>Reviews</h2>\
+                  <span class="show-reviews">Show</span>\
+                </div>
                 <ul></ul>\
               </div>\
             </article>\

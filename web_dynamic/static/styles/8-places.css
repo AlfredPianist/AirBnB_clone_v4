@@ -101,19 +101,17 @@
   margin-bottom: 5%;
 }
 
-.reviews h2 span {
-  font-size: 15px;
-  border-radius: 5%;
-  background: #ff5a5f;
-}
-
-.places .reviews h2 {
-  padding: 5% 0 5% 0;
-  padding-bottom: 2%;
+.reviews-title {
+  display: flex;
+  margin-top: 10px;
   border-bottom: 1px solid #575757;
 }
 
-.places .reviews>ul {
+.places .reviews h2 {
+  width: 80%;
+}
+
+.places .reviews > ul {
   list-style: none;
   display: flex;
   flex-direction: column;
@@ -121,7 +119,7 @@
   padding: 0;
 }
 
-.places .reviews>ul li {
+.places .reviews > ul li {
   background-size: 20px;
   padding-left: 25px;
   padding-bottom: 25px;
@@ -138,4 +136,15 @@
 .places .reviews ul li p {
   padding-bottom: 5%;
   margin-top: 0px;
+}
+
+.show-reviews {
+  align-self: center;
+  font-size: 15px;
+  font-weight: bold;
+  color: #ffffff;
+  cursor: pointer;
+  border-radius: 10%;
+  background: #ff5a5f;
+  padding: 2%;
 }
