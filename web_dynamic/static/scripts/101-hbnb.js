@@ -1,4 +1,19 @@
 $(document).ready(function () {
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ];
+  const daySuffix = ['st', 'nd', 'rd'];
   const url = 'http://0.0.0.0:5001/api/v1/';
   $.get(url + 'status/', (data, status) => {
     if (status === 'success' && data.status === 'OK') {
@@ -32,7 +47,7 @@ $(document).ready(function () {
     $(selector).text(Object.values(filterDict).join(', '));
   };
 
-  const search = (jsonBody = {}) => {
+  const searchPlaces = (jsonBody = {}) => {
     $.ajax({
       url: url + 'places_search/',
       type: 'POST',
@@ -59,9 +74,10 @@ $(document).ready(function () {
                 </div>\
               </div>\
               <div class="description">${place.description}</div>\
-              <div class=reviews>
-                <h2>Reviews <span class="show-reviews">Show</span></h2>
-              </div>
+              <div class="reviews">\
+                <h2>Reviews <span class="show-reviews">Show</span></h2>\
+                <ul></ul>\
+              </div>\
             </article>\
           `);
         }
@@ -69,26 +85,57 @@ $(document).ready(function () {
     });
   };
 
-  $(document).on('click', 'span.show-reviews', function () {
-    const parentArticle = $(this).parents('article');
-    const placeID = parentArticle.attr('id');
+  const searchUser = (userID, callback) => {
     $.ajax({
-      url: url + 'places/' + placeID + '/reviews/',
+      url: url + 'users/' + userID,
       type: 'GET',
-      success: (reviews) => {
-        for (const review of reviews) {
-          // Agregar el review al artículo respectivo. Aquí añade a todos los artículos.
-          $('div.reviews').append(`\
-            <ul>\
-              <li>\
-                <h3>Date: ${review.created_at}</h3>\
-                <p>${review.text}</p>\
-              </li>\
-            </ul>\
-          `);
-        }
+      success: (user) => {
+        callback(user);
       }
     });
+  };
+
+  const stringFromDate = (date) => {
+    let day = date.getDate();
+    const dayDigit = day % 10;
+    const suffix =
+      daySuffix[dayDigit - 1] !== undefined ? daySuffix[dayDigit - 1] : 'th';
+
+    day = day + suffix;
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+
+    return `${day} ${month} ${year}`;
+  };
+
+  $(document).on('click', 'span.show-reviews', function () {
+    if (!$(this).data('clicked')) {
+      const placeID = $(this).parents('article').attr('id');
+      $(this).text('Hide');
+      $.ajax({
+        url: url + 'places/' + placeID + '/reviews/',
+        type: 'GET',
+        success: (reviews) => {
+          for (const review of reviews) {
+            const date = stringFromDate(new Date(review.created_at));
+            $(`#${placeID} .reviews ul`).append(`\
+              <li>\
+                <h3>From <b id="${review.user_id}"></b> the ${date}</h3>\
+                <p>${review.text}</p>\
+              </li>\
+            `);
+            searchUser(review.user_id, (user) => {
+              $(`b#${user.id}`).text(user.first_name);
+            });
+          }
+        }
+      });
+      $(this).data('clicked', true);
+    } else {
+      $(this).text('Show');
+      $(this).parents('.reviews').find('ul').empty();
+      $(this).data('clicked', false);
+    }
   });
 
   $('#search').click(() => {
@@ -97,8 +144,8 @@ $(document).ready(function () {
       cities: Object.keys(citiesSelect),
       amenities: Object.keys(amenitiesSelect)
     };
-    search(filters);
+    searchPlaces(filters);
   });
 
-  search();
+  searchPlaces();
 });
